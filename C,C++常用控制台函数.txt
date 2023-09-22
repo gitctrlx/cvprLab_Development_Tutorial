@@ -1,0 +1,202 @@
+// 判断用户是否有输入(键盘缓冲区是否有值), 如果有 返回非0   否则返回0
+int _kbhit();
+Sleep(500);
+
+//使用案例
+int count = 1;
+char input;
+while (1) {
+	count++;
+	Sleep(100);
+	if (count == 5) {
+		printf("---\n");
+		count = 1;
+	}
+	else if (_kbhit()) {
+		input = _getch();
+		if (input == 27) break;
+		printf("%c", input);
+	}
+	
+	time.h
+	0 = click();
+	
+	if(click > 1000)
+	
+}
+
+
+	
+---------------------------------------
+#include <windows.h>
+// 传入坐标, 将光标移动到指定坐标
+void gotoXY(int x, int y)
+{
+	COORD c;
+	c.X = x - 1;
+	c.Y = y - 1;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+
+//使用案例
+//清理指定矩形区域(从(x,y)到(x+w,y+h)的矩形
+void clear(int x, int y, int w, int h)
+{
+	for (int i = 0; i < h; i++) {
+		gotoXY(x, y + i);
+		for (int j = 0;j < w;j++) putchar(' ');
+	}
+}
+
+--------------------------------------------
+#include <windows.h>
+/*
+	设置打印字体的颜色
+	0x24: 低位4表示字体红色 高位2表示背景绿色
+	
+	0: 黑
+	1: 蓝
+	2: 绿
+	3: 蓝绿
+	4: 红
+	5: 紫
+	6: 黄
+	7: 白
+	+8表示高亮
+*/
+void setPrintColor(int color) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+//使用案例
+	int userChoose = 0;
+	while (1) {
+		gotoXY(60, 3);
+		printf("大     富     翁");
+
+		if (userChoose == 0) setPrintColor(0x6f);
+		gotoXY(64, 6);
+		printf("开始游戏");
+		if (userChoose == 0) setPrintColor(0x0f);
+
+		if (userChoose == 1) setPrintColor(0x6f);
+		gotoXY(65, 9);
+		printf("排行榜");
+		if (userChoose == 1) setPrintColor(0x0f);
+
+		if (userChoose == 2) setPrintColor(0x6f);
+		gotoXY(64, 12);
+		printf("游戏设置");
+		if (userChoose == 2) setPrintColor(0x0f);
+
+		if (userChoose == 3) setPrintColor(0x6f);
+		gotoXY(64, 15);
+		printf("退出游戏");
+		if (userChoose == 3) setPrintColor(0x0f);
+
+
+		char input = _getch();
+		switch (input) {
+		case 'w':
+			userChoose -= 1;
+			if (userChoose == -1) userChoose = 3;
+			break;
+		case 's':
+			userChoose = (userChoose + 1) % 4;
+			break;
+		case '\r':
+			clear(3, 2, 80, 20);
+			switch (userChoose) {
+			case 0:
+				//choosePlayer();
+				exit(0);
+				break;
+			case 1:
+				exit(0);
+				break;
+			case 2:
+				//settingView();
+				exit(0);
+				
+				break;
+			case 3:
+				exit(0);
+				break;
+			}
+			clear(3, 2, 36, 20);
+			break;
+		}
+	}
+----------------------------------------------------
+#include<windows.h>
+#include<Mmsystem.h>
+#pragma comment(lib,"winmm.lib")
+
+#define music_background 0
+#define music_over 1
+#define music_score 2
+#define music_title 3
+// 是否播放音乐 0表示不播放, 1表示播放
+extern int isMusic=1;
+
+//音乐文件的路径
+const wchar_t musicPath[4][128] = {
+	L"./background.wav",
+	L"./music/over.wav",
+	L"./music/score.wav",
+	L"./music/title.wav"
+}; 
+
+
+
+// 播放指定音乐
+int playMusic(int choose) {
+	if (!isMusic) return 0;
+	wchar_t cmd[MAX_PATH + 10];
+	if(choose >=0 && choose<= 3){
+		if(choose == music_title){
+			// 如果是背景音乐  则循环播放
+			wsprintf(cmd, L"open %s alias title_bgm type mpegvideo", musicPath[choose]);
+			mciSendString(cmd, 0, NULL, NULL);
+			mciSendString(L"play title_bgm repeat", NULL, 0, NULL);
+		}
+		else if(choose == music_background){
+			// 如果是背景音乐  则循环播放
+			wsprintf(cmd, L"open %s alias background_bgm type mpegvideo", musicPath[choose]);
+			mciSendString(cmd, 0, NULL, NULL);
+			mciSendString(L"play background_bgm repeat", NULL, 0, NULL);
+		}
+		else {
+			// 否则 只播放一次
+			wsprintf(cmd, L"play %s ", musicPath[choose]);
+			mciSendString(cmd, 0, NULL, NULL);
+		}
+		return 1;
+	}
+	
+	return 0;
+};
+
+// 停止播放指定音乐
+int stopMusic(int choose) {
+	wchar_t cmd[MAX_PATH + 10];
+	if (choose == music_background || choose == music_title) {
+		
+	}
+	if (choose == music_title) {
+		return mciSendString(L"stop title_bgm", NULL, 0, NULL);
+	}
+	else if (choose == music_background) {
+		return mciSendString(L"stop background_bgm", NULL, 0, NULL);
+	}
+	wsprintf(cmd, L"stop %s", musicPath[choose]);
+	return mciSendString(cmd, NULL, 0, NULL);
+}
+
+//使用案例
+playMusic(3);
+_getch();
+//设置音量为0   0x00000000~0xFFFFFFFF
+waveOutSetVolume(0, 0x00000000);
+_getch();
